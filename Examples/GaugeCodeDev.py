@@ -22,20 +22,18 @@ i2c = busio.I2C(board.SCL, board.SDA)
 
 # Create the ADC object using the I2C bus
 ads = ADS.ADS1015(i2c)
-bmp = adafruit_bmp3xx.BMP3XX_I2C(i2c)
-bmp.sea_level_pressure = 1017.2
-bmp390_mode(bmp390, mode='lowpower')
-bmp390.pressure_oversampling = 16
-bmp390.temperature_oversampling = 2
-bmp390.filter_coefficient = 4
-
 # Create single-ended input on channel 0
 chan = AnalogIn(ads, ADS.P0)
 
-
-
-# Create differential input between channel 0 and 1
-# chan = AnalogIn(ads, ADS.P0, ADS.P1)
+#create BMP390 object using i2c bus
+bmp = adafruit_bmp3xx.BMP3XX_I2C(i2c)
+#set sea level pressure
+bmp.sea_level_pressure = 1017.2
+#set BMP390 mode and args
+bmp390_mode(bmp390, mode='highres')
+bmp390.pressure_oversampling = 16
+bmp390.temperature_oversampling = 2
+bmp390.filter_coefficient = 4
 
 # check for DVI Feather
 if 'CKP' in dir(board):
@@ -57,7 +55,7 @@ display = framebufferio.FramebufferDisplay(fb)
 
 bitmap = displayio.Bitmap(display.width, display.height, 3)
 
-
+#color table
 yellow = 0xcccc00
 white = 0xffffff
 red = 0xff0000
@@ -86,6 +84,7 @@ def clean_up(group_name):
         group_name.pop()
     gc.collect()
 
+#function to show startup screen
 def run_before_loop():
     bitmap = displayio.OnDiskBitmap("/blinka.bmp")
      # Create a TileGrid to hold the bitmap
@@ -100,6 +99,7 @@ def run_before_loop():
 
 time.run_before_loop()
 
+#custom PCF font
 gc.collect()
 my_font = bitmap_font.load_font("/Helvetica-Bold-16.pcf")
 text_sample = "The quick brown fox jumps over the lazy dog."
@@ -120,6 +120,7 @@ clean_up(group)
 del my_font
 gc.collect()
 
+#text labels for sensor data
 text_x = ("PSI Label")
 x_text = label.Label(terminalio.FONT, text=text_x, color=green)
 x_text.anchor_point = (0.0, 0.0)
