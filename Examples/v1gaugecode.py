@@ -94,6 +94,26 @@ def run_before_loop():
 
 time.run_before_loop()
 
+gc.collect()
+my_font = bitmap_font.load_font("/Helvetica-Bold-16.pcf")
+text_sample = "The quick brown fox jumps over the lazy dog."
+text_sample = "\n".join(wrap_text_to_lines(text_sample, 28))
+text_area = label.Label(my_font, text="Custom Font", color=white)
+text_area.anchor_point = (50, 25)
+text_area.anchored_position = (0, 0)
+
+sample_text = label.Label(my_font, text=text_sample)
+sample_text.anchor_point = (0.5, 0.5)
+sample_text.anchored_position = (display.width / 3, display.height / 3)
+
+group.append(text_area)
+group.append(sample_text)
+
+clean_up(group)
+
+del my_font
+gc.collect()
+
 text_x = ("PSI Label")
 x_text = label.Label(terminalio.FONT, text=text_x, color=green)
 x_text.anchor_point = (0.0, 0.0)
