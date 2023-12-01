@@ -80,6 +80,20 @@ def clean_up(group_name):
         group_name.pop()
     gc.collect()
 
+def run_before_loop():
+    bitmap = displayio.OnDiskBitmap("/blinka.bmp")
+     # Create a TileGrid to hold the bitmap
+    tile_grid = displayio.TileGrid(bitmap, pixel_shader=bitmap.pixel_shader)
+    # Create a Group to hold the TileGrid
+    group = displayio.Group()
+    # Add the TileGrid to the Group
+    group.append(tile_grid)
+    # Add the Group to the Display
+    display.root_group = group
+    time.sleep(2.0)
+
+time.run_before_loop()
+
 text_x = ("PSI Label")
 x_text = label.Label(terminalio.FONT, text=text_x, color=green)
 x_text.anchor_point = (0.0, 0.0)
