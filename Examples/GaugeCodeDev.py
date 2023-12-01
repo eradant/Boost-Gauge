@@ -24,9 +24,15 @@ i2c = busio.I2C(board.SCL, board.SDA)
 ads = ADS.ADS1015(i2c)
 bmp = adafruit_bmp3xx.BMP3XX_I2C(i2c)
 bmp.sea_level_pressure = 1017.2
+bmp390_mode(bmp390, mode='lowpower')
+bmp390.pressure_oversampling = 16
+bmp390.temperature_oversampling = 2
+bmp390.filter_coefficient = 4
 
 # Create single-ended input on channel 0
 chan = AnalogIn(ads, ADS.P0)
+
+
 
 # Create differential input between channel 0 and 1
 # chan = AnalogIn(ads, ADS.P0, ADS.P1)
