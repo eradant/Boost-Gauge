@@ -14,6 +14,7 @@ from adafruit_display_text import label, wrap_text_to_lines
 import adafruit_ads1x15.ads1015 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 import adafruit_bmp3xx
+import gc
 
 displayio.release_displays()
 
@@ -25,15 +26,10 @@ ads = ADS.ADS1015(i2c)
 # Create single-ended input on channel 0
 chan = AnalogIn(ads, ADS.P0)
 
-#create BMP390 object using i2c bus
 bmp = adafruit_bmp3xx.BMP3XX_I2C(i2c)
-#set sea level pressure
 bmp.sea_level_pressure = 1017.2
-#set BMP390 mode and args
-bmp390_mode(bmp390, mode='highres')
-bmp390.pressure_oversampling = 16
-bmp390.temperature_oversampling = 2
-bmp390.filter_coefficient = 4
+
+
 
 # check for DVI Feather
 if 'CKP' in dir(board):
@@ -55,7 +51,7 @@ display = framebufferio.FramebufferDisplay(fb)
 
 bitmap = displayio.Bitmap(display.width, display.height, 3)
 
-#color table
+
 yellow = 0xcccc00
 white = 0xffffff
 red = 0xff0000
@@ -84,9 +80,8 @@ def clean_up(group_name):
         group_name.pop()
     gc.collect()
 
-#function to show startup screen
 def run_before_loop():
-    bitmap = displayio.OnDiskBitmap("/blinka.bmp")
+    bitmap = displayio.OnDiskBitmap("/bbb.bmp")
      # Create a TileGrid to hold the bitmap
     tile_grid = displayio.TileGrid(bitmap, pixel_shader=bitmap.pixel_shader)
     # Create a Group to hold the TileGrid
@@ -95,32 +90,20 @@ def run_before_loop():
     group.append(tile_grid)
     # Add the Group to the Display
     display.root_group = group
-    time.sleep(2.0)
 
-time.run_before_loop()
 
-#custom PCF font
+run_before_loop()
+time.sleep(7)
 gc.collect()
+
+#experiment
 my_font = bitmap_font.load_font("/Helvetica-Bold-16.pcf")
-text_sample = "The quick brown fox jumps over the lazy dog."
-text_sample = "\n".join(wrap_text_to_lines(text_sample, 28))
-text_area = label.Label(my_font, text="Custom Font", color=white)
-text_area.anchor_point = (50, 25)
-text_area.anchored_position = (0, 0)
+text_f = ("PSI Label")
+f_text = label.Label(my_font, text=text_f, color=blue)
+f_text.anchor_point = (0.0, 0.0)
+f_text.anchored_position = (0, 2)
+group.append(f_text)
 
-sample_text = label.Label(my_font, text=text_sample)
-sample_text.anchor_point = (0.5, 0.5)
-sample_text.anchored_position = (display.width / 3, display.height / 3)
-
-group.append(text_area)
-group.append(sample_text)
-
-clean_up(group)
-
-del my_font
-gc.collect()
-
-#text labels for sensor data
 text_x = ("PSI Label")
 x_text = label.Label(terminalio.FONT, text=text_x, color=green)
 x_text.anchor_point = (0.0, 0.0)
@@ -155,9 +138,12 @@ group.append(b_text)
 display.root_group = group
 
 while True:
+    #my_font = bitmap_font.load_font("/Helvetica-Bold-16.pcf")
     z_text.text = ("{:>5.3f}".format((chan.voltage * 9.48901) - bmp.pressure * .0145038))
     x_text.text = ("PSI")
-    y_text.text = ("Ambient PSI:{:6.1f}".format(bmp.pressure * .0145038))
+    y_text.text = ("Ambient PSI:{:6.1f}".format(bmp.pressure))
     a_text.text = ('Altitude Ft: {} '.format(bmp.altitude * 3.28084))
     b_text.text = ("MAP Voltage: {:>5.3f}v".format(chan.voltage))
+    f_text.text = ("{:>5.3f}".format((chan.voltage * 9.48901) - bmp.pressure * .0145038))
     time.sleep(0.05)
+
