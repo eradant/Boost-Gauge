@@ -80,7 +80,7 @@ def clean_up(group_name):
         group_name.pop()
     gc.collect()
 
-def run_before_loop():
+def ford_racing_startup():
     bitmap = displayio.OnDiskBitmap("/bbb.bmp")
      # Create a TileGrid to hold the bitmap
     tile_grid = displayio.TileGrid(bitmap, pixel_shader=bitmap.pixel_shader)
@@ -92,12 +92,12 @@ def run_before_loop():
     display.root_group = group
 
 
-run_before_loop()
+ford_racing_startup()
 time.sleep(7)
 gc.collect()
 
-def run_before_loop2():
-    bitmap = displayio.OnDiskBitmap("/ddd.bmp")
+def boost_vision_startup():
+    bitmap = displayio.OnDiskBitmap("/eee.bmp")
      # Create a TileGrid to hold the bitmap
     tile_grid = displayio.TileGrid(bitmap, pixel_shader=bitmap.pixel_shader)
     # Create a Group to hold the TileGrid
@@ -106,14 +106,35 @@ def run_before_loop2():
     group.append(tile_grid)
     # Add the Group to the Display
     display.root_group = group
-
-
-run_before_loop2()
-time.sleep(7)
+    time.sleep(2)
+    sick_font = bitmap_font.load_font("/InsertCoins-9.pcf")
+    start_1 = ("PRESS START.")
+    start_2 = ("            .")
+    start_3 = ("             .")
+    text_1 = label.Label(sick_font, text=start_1, color=red)
+    text_1.anchor_point = (0.0, 0.0)
+    text_1.anchored_position = (108, 130)
+    group.append(text_1)
+    time.sleep(.5)
+    text_2 = label.Label(sick_font, text=start_2, color=red)
+    text_2.anchor_point = (0.0, 0.0)
+    text_2.anchored_position = (108, 130)
+    group.append(text_2)
+    time.sleep(.5)
+    text_3 = label.Label(sick_font, text=start_3, color=red)
+    text_3.anchor_point = (0.0, 0.0)
+    text_3.anchored_position = (108, 130)
+    group.append(text_3)
+    time.sleep(.5)
+    del sick_font
+    
+    
+boost_vision_startup()
+time.sleep(3)
 gc.collect()
 
 #experiment
-my_font = bitmap_font.load_font("/Helvetica-Bold-16.pcf")
+my_font = bitmap_font.load_font("/InsertCoins-9.pcf")
 text_f = ("PSI Label")
 f_text = label.Label(my_font, text=text_f, color=blue)
 f_text.anchor_point = (0.0, 0.0)
