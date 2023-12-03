@@ -29,8 +29,6 @@ chan = AnalogIn(ads, ADS.P0)
 bmp = adafruit_bmp3xx.BMP3XX_I2C(i2c)
 bmp.sea_level_pressure = 1017.2
 
-
-
 # check for DVI Feather
 if 'CKP' in dir(board):
     fb = picodvi.Framebuffer(320, 240,
