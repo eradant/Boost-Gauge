@@ -26,11 +26,9 @@ i2c = busio.I2C(board.SCL, board.SDA)
 ads = ADS.ADS1015(i2c)
 # Create single-ended input on channel 0
 chan = AnalogIn(ads, ADS.P0)
-
+#create pressure sensor
 bmp = adafruit_bmp3xx.BMP3XX_I2C(i2c)
 bmp.sea_level_pressure = 1017.2
-
-
 
 # check for DVI Feather
 if 'CKP' in dir(board):
@@ -52,7 +50,7 @@ display = framebufferio.FramebufferDisplay(fb)
 
 bitmap = displayio.Bitmap(display.width, display.height, 3)
 
-
+#color table
 yellow = 0xC19C00
 brightYellow = 0xF9F1A5
 white = 0xffffff
@@ -66,7 +64,6 @@ white = 0xffffff
 green = 0x16C60C
 aqua = 0x00FFFF
 grey = 0x4A4A4A
-
 
 palette = displayio.Palette(3)
 palette[0] = 0x000000 # black
@@ -248,10 +245,6 @@ group.append(roundrect1)
 group.append(roundrect2)
 group.append(roundrect3)
 
-#boost = ((chan.voltage * 9.48901) - bmp.pressure * .0145038)
-
-
-
 while True:
     
     boost = ((chan.voltage * 9.48901) - bmp.pressure * .0145038)
@@ -294,7 +287,6 @@ while True:
     
     z_text.text = ("{:>5.2f}".format((chan.voltage * 9.48901) - bmp.pressure * .0145038))
     x_text.text = ("PSI")
-    #a_text.text = ((chan.voltage * 9.48901) - bmp.pressure * .0145038)
     b_text.text = ("{:>5.3f}".format(chan.voltage))
     c_text.text = ("STATUS")
     bl_text.text = ("k")
