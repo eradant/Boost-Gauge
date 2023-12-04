@@ -9,12 +9,13 @@ import vectorio
 import terminalio
 import simpleio
 import busio
+from adafruit_display_shapes.rect import Rect
+from adafruit_display_shapes.roundrect import RoundRect
 from adafruit_bitmap_font import bitmap_font
 from adafruit_display_text import label, wrap_text_to_lines
 import adafruit_ads1x15.ads1015 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 import adafruit_bmp3xx
-import gc
 
 displayio.release_displays()
 
@@ -52,16 +53,19 @@ display = framebufferio.FramebufferDisplay(fb)
 bitmap = displayio.Bitmap(display.width, display.height, 3)
 
 
-yellow = 0xcccc00
+yellow = 0xC19C00
+brightYellow = 0xF9F1A5
 white = 0xffffff
 red = 0xff0000
 orange = 0xff5500
 blue = 0x0000ff
 pink = 0xff00ff
-purple = 0x5500ff
+purple = 0x881798
+brightPurple = 0xB4009E
 white = 0xffffff
-green = 0x00ff00
-aqua = 0x125690
+green = 0x16C60C
+aqua = 0x00FFFF
+grey = 0x4A4A4A
 
 
 palette = displayio.Palette(3)
@@ -93,7 +97,7 @@ def ford_racing_startup():
 
 
 ford_racing_startup()
-time.sleep(7)
+time.sleep(1)
 gc.collect()
 
 def boost_vision_startup():
@@ -130,55 +134,170 @@ def boost_vision_startup():
     
     
 boost_vision_startup()
-time.sleep(3)
+time.sleep(2.5)
 gc.collect()
 
-#experiment
+#fonts
 my_font = bitmap_font.load_font("/InsertCoins-9.pcf")
-text_f = ("PSI Label")
-f_text = label.Label(my_font, text=text_f, color=blue)
+scanline_30 = bitmap_font.load_font("/scanline-30.pcf")
+sevenseg_30 = bitmap_font.load_font("7seg-30.pcf")
+warningSign = bitmap_font.load_font("tables-20.pcf")
+carParts = bitmap_font.load_font("CarParts-20.pcf")
+arrowFont = bitmap_font.load_font("arrows.pcf")
+
+#low boost indicators
+text_f = (" ")
+f_text = label.Label(scanline_30, text=text_f, color=green)
 f_text.anchor_point = (0.0, 0.0)
-f_text.anchored_position = (0, 2)
+f_text.anchored_position = (15, 4)
 group.append(f_text)
+
+text_fa = (" ")
+fa_text = label.Label(scanline_30, text=text_fa, color=green)
+fa_text.anchor_point = (0.0, 0.0)
+fa_text.anchored_position = (30, 4)
+group.append(fa_text)
+
+text_fb = (" ")
+fb_text = label.Label(scanline_30, text=text_fb, color=green)
+fb_text.anchor_point = (0.0, 0.0)
+fb_text.anchored_position = (45, 4)
+group.append(fb_text)
+
+#mid boost indicator
+text_g = (" ")
+g_text = label.Label(scanline_30, text=text_g, color=yellow)
+g_text.anchor_point = (0.0, 0.0)
+g_text.anchored_position = (60, 4)
+group.append(g_text)
+
+
+#high boost indicator
+text_h = (" ")
+h_text = label.Label(scanline_30, text=text_h, color=red)
+h_text.anchor_point = (0.0, 0.0)
+h_text.anchored_position = (105, 4)
+group.append(h_text)
+
+#warning sign
+text_w = (" ")
+w_text = label.Label(warningSign, text=text_w, color=red)
+w_text.anchor_point = (0.0, 0.0)
+w_text.anchored_position = (132, 100)
+group.append(w_text)
+
+#turbo icon
+text_v = (" ")
+v_text = label.Label(carParts, text=text_v, color=green)
+v_text.anchor_point = (0.0, 0.0)
+v_text.anchored_position = (112, 100)
+group.append(v_text)
+
+#data
 
 text_x = ("PSI Label")
 x_text = label.Label(terminalio.FONT, text=text_x, color=green)
 x_text.anchor_point = (0.0, 0.0)
-x_text.anchored_position = (90, 25)
+x_text.anchored_position = (120, 55)
 group.append(x_text)
 
 text_z = ("PSI Data")
-z_text = label.Label(terminalio.FONT, text=text_z, color=white)
+z_text = label.Label(sevenseg_30, text=text_z, color=white)
 z_text.anchor_point = (0.0, 0.0)
-z_text.anchored_position = (50, 25)
+z_text.anchored_position = (20, 39)
 group.append(z_text)
 group.scale = 2
 
-text_y = ("PSI Ambient")
-y_text = label.Label(terminalio.FONT, text=text_y, color=aqua)
-y_text.anchor_point = (0.0, 0.0)
-y_text.anchored_position = (18, 65)
-group.append(y_text)
-
-text_a = ("Altitude")
-a_text = label.Label(terminalio.FONT, text=text_a, color=orange)
+text_a = ("")
+a_text = label.Label(my_font, text=text_a, color=brightPurple)
 a_text.anchor_point = (0.0, 0.0)
-a_text.anchored_position = (18, 85)
+a_text.anchored_position = (43, 106)
 group.append(a_text)
 
+text_al = ("Altitude")
+al_text = label.Label(arrowFont, text=text_al, color=purple)
+al_text.anchor_point = (0.0, 0.0)
+al_text.anchored_position = (7, 100)
+group.append(al_text)
+
 text_b = ("voltage")
-b_text = label.Label(terminalio.FONT, text=text_b, color=yellow)
+b_text = label.Label(my_font, text=text_b, color=brightYellow)
 b_text.anchor_point = (0.0, 0.0)
-b_text.anchored_position = (18, 45)
+b_text.anchored_position = (50, 87)
 group.append(b_text)
 
+text_bl = ("voltage")
+bl_text = label.Label(carParts, text=text_bl, color=yellow)
+bl_text.anchor_point = (0.0, 0.0)
+bl_text.anchored_position = (7, 83)
+group.append(bl_text)
+
+text_c = ("status")
+c_text = label.Label(my_font, text=text_c, color=grey)
+c_text.anchor_point = (0.0, 0.0)
+c_text.anchored_position = (106, 85)
+group.append(c_text)
+
 display.root_group = group
+roundrect = RoundRect(2, 80, 100, 40, 5,outline=grey, stroke=1)
+roundrect1 = RoundRect(2, 29, 156, 50, 5,outline=grey, stroke=1)
+roundrect2 = RoundRect(103, 80, 55, 40, 5,outline=grey, stroke=1)
+roundrect3 = RoundRect(2, 0, 156, 28, 5,outline=grey, stroke=1)
+group.append(roundrect)
+group.append(roundrect1)
+group.append(roundrect2)
+group.append(roundrect3)
+
+#boost = ((chan.voltage * 9.48901) - bmp.pressure * .0145038)
+
+
 
 while True:
-    z_text.text = ("{:>5.3f}".format((chan.voltage * 9.48901) - bmp.pressure * .0145038))
+    
+    boost = ((chan.voltage * 9.48901) - bmp.pressure * .0145038)
+    if boost >= .5:
+        f_text.text = (">")
+        v_text.text = ("l")
+    else:
+        f_text.text = (" ")
+        v_text.text = (" ")
+        gc.collect()
+    if boost >= 5:
+        fa_text.text = (">")
+    else:
+        fa_text.text = (" ")
+        gc.collect()
+    if boost >= 8:
+        fb_text.text = (">")
+    else:
+        fb_text.text = (" ")
+        gc.collect()
+        
+    if boost >=15:
+        g_text.text = (">>>")
+    else:
+        g_text.text = (" ")
+        gc.collect()
+        
+    if boost >=20:
+        h_text.text = (">>>")
+        w_text.text = ("I")
+        
+    else:
+        h_text.text = (" ")
+        w_text.text = (" ")
+        gc.collect()
+    if boost >=.5:
+        a_text.text = "{:2.2f}PSI".format(boost)
+    else:
+        pass
+    
+    z_text.text = ("{:>5.2f}".format((chan.voltage * 9.48901) - bmp.pressure * .0145038))
     x_text.text = ("PSI")
-    y_text.text = ("Ambient PSI:{:6.1f}".format(bmp.pressure))
-    a_text.text = ('Altitude Ft: {} '.format(bmp.altitude * 3.28084))
-    b_text.text = ("MAP Voltage: {:>5.3f}v".format(chan.voltage))
-    f_text.text = ("{:>5.3f}".format((chan.voltage * 9.48901) - bmp.pressure * .0145038))
+    #a_text.text = ((chan.voltage * 9.48901) - bmp.pressure * .0145038)
+    b_text.text = ("{:>5.3f}".format(chan.voltage))
+    c_text.text = ("STATUS")
+    bl_text.text = ("k")
+    al_text.text = ("B")
+    gc.collect()
     time.sleep(0.05)
