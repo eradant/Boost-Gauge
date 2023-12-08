@@ -26,9 +26,11 @@ i2c = busio.I2C(board.SCL, board.SDA)
 ads = ADS.ADS1015(i2c)
 # Create single-ended input on channel 0
 chan = AnalogIn(ads, ADS.P0)
-#create pressure sensor
+
 bmp = adafruit_bmp3xx.BMP3XX_I2C(i2c)
 bmp.sea_level_pressure = 1017.2
+
+
 
 # check for DVI Feather
 if 'CKP' in dir(board):
@@ -50,11 +52,11 @@ display = framebufferio.FramebufferDisplay(fb)
 
 bitmap = displayio.Bitmap(display.width, display.height, 3)
 
-#color table
+
 yellow = 0xC19C00
 brightYellow = 0xF9F1A5
 white = 0xffffff
-red = 0xff0000
+red = 0xC50F1F
 orange = 0xff5500
 blue = 0x0000ff
 pink = 0xff00ff
@@ -64,6 +66,7 @@ white = 0xffffff
 green = 0x16C60C
 aqua = 0x00FFFF
 grey = 0x4A4A4A
+
 
 palette = displayio.Palette(3)
 palette[0] = 0x000000 # black
@@ -94,7 +97,7 @@ def ford_racing_startup():
 
 
 ford_racing_startup()
-time.sleep(1)
+time.sleep(5)
 gc.collect()
 
 def boost_vision_startup():
@@ -128,14 +131,15 @@ def boost_vision_startup():
     group.append(text_3)
     time.sleep(.5)
     del sick_font
-    
-    
+
+
 boost_vision_startup()
 time.sleep(2.5)
 gc.collect()
 
 #fonts
 my_font = bitmap_font.load_font("/InsertCoins-9.pcf")
+scanline_10 = bitmap_font.load_font("/scanline-10.pcf")
 scanline_30 = bitmap_font.load_font("/scanline-30.pcf")
 sevenseg_30 = bitmap_font.load_font("7seg-30.pcf")
 warningSign = bitmap_font.load_font("tables-20.pcf")
@@ -168,6 +172,17 @@ g_text.anchor_point = (0.0, 0.0)
 g_text.anchored_position = (60, 4)
 group.append(g_text)
 
+text_ga = (" ")
+ga_text = label.Label(scanline_30, text=text_ga, color=yellow)
+ga_text.anchor_point = (0.0, 0.0)
+ga_text.anchored_position = (75, 4)
+group.append(ga_text)
+
+text_gb = (" ")
+gb_text = label.Label(scanline_30, text=text_gb, color=yellow)
+gb_text.anchor_point = (0.0, 0.0)
+gb_text.anchored_position = (90, 4)
+group.append(gb_text)
 
 #high boost indicator
 text_h = (" ")
@@ -175,6 +190,18 @@ h_text = label.Label(scanline_30, text=text_h, color=red)
 h_text.anchor_point = (0.0, 0.0)
 h_text.anchored_position = (105, 4)
 group.append(h_text)
+
+text_ha = (" ")
+ha_text = label.Label(scanline_30, text=text_ha, color=red)
+ha_text.anchor_point = (0.0, 0.0)
+ha_text.anchored_position = (120, 4)
+group.append(ha_text)
+
+text_hb = (" ")
+hb_text = label.Label(scanline_30, text=text_hb, color=red)
+hb_text.anchor_point = (0.0, 0.0)
+hb_text.anchored_position = (135, 4)
+group.append(hb_text)
 
 #warning sign
 text_w = (" ")
@@ -193,9 +220,9 @@ group.append(v_text)
 #data
 
 text_x = ("PSI Label")
-x_text = label.Label(terminalio.FONT, text=text_x, color=green)
+x_text = label.Label(my_font, text=text_x, color=green)
 x_text.anchor_point = (0.0, 0.0)
-x_text.anchored_position = (120, 55)
+x_text.anchored_position = (120, 61)
 group.append(x_text)
 
 text_z = ("PSI Data")
@@ -208,7 +235,7 @@ group.scale = 2
 text_a = ("")
 a_text = label.Label(my_font, text=text_a, color=brightPurple)
 a_text.anchor_point = (0.0, 0.0)
-a_text.anchored_position = (43, 106)
+a_text.anchored_position = (50, 106)
 group.append(a_text)
 
 text_al = ("Altitude")
@@ -245,51 +272,87 @@ group.append(roundrect1)
 group.append(roundrect2)
 group.append(roundrect3)
 
+#boost = ((chan.voltage * 9.48901) - bmp.pressure * .0145038)
+
+
+
 while True:
-    
+
     boost = ((chan.voltage * 9.48901) - bmp.pressure * .0145038)
-    if boost >= .5:
+    if boost >= 2.7:
         f_text.text = (">")
         v_text.text = ("l")
     else:
         f_text.text = (" ")
         v_text.text = (" ")
         gc.collect()
-    if boost >= 5:
+    if boost >= 5.4:
         fa_text.text = (">")
     else:
         fa_text.text = (" ")
         gc.collect()
-    if boost >= 8:
+    if boost >= 8.1:
         fb_text.text = (">")
     else:
         fb_text.text = (" ")
         gc.collect()
-        
-    if boost >=15:
-        g_text.text = (">>>")
+    #Mid
+    if boost >=10.8:
+        g_text.text = (">")
     else:
         g_text.text = (" ")
         gc.collect()
-        
-    if boost >=20:
-        h_text.text = (">>>")
-        w_text.text = ("I")
-        
+    if boost >=13.5:
+        ga_text.text = (">")
+    else:
+        ga_text.text = (" ")
+        gc.collect()
+    if boost >=16.2:
+        gb_text.text = (">")
+    else:
+        gb_text.text = (" ")
+        gc.collect()
+    #high
+    if boost >=18.9:
+        h_text.text = (">")
     else:
         h_text.text = (" ")
-        w_text.text = (" ")
         gc.collect()
-    if boost >=.5:
-        a_text.text = "{:2.2f}PSI".format(boost)
+    if boost >=20.8:
+        ha_text.text = (">")
+    else:
+        ha_text.text = (" ")
+        gc.collect()
+    if boost >=23.5:
+        hb_text.text = (">")
+    else:
+        hb_text.text = (" ")
+        gc.collect()
+    #high score
+    if boost >=20:
+        a_text.text = "{:2.2f}".format(boost)
     else:
         pass
-    
+    #def bewst(boost1, boost):
+        #maximum = 0
+        #for boost1 in bewst:
+            #if boost > maximum:
+                #a_max = boost1
+                #a_text.text = ("{:3.2f}".format(a_max))
+            #else:
+                #pass
+
+
+
     z_text.text = ("{:>5.2f}".format((chan.voltage * 9.48901) - bmp.pressure * .0145038))
     x_text.text = ("PSI")
+    #a_text.text = ((chan.voltage * 9.48901) - bmp.pressure * .0145038)
     b_text.text = ("{:>5.3f}".format(chan.voltage))
     c_text.text = ("STATUS")
     bl_text.text = ("k")
     al_text.text = ("B")
+
+
     gc.collect()
     time.sleep(0.05)
+
