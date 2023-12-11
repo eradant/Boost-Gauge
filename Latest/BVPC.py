@@ -16,6 +16,7 @@ from adafruit_display_text import label, wrap_text_to_lines
 import adafruit_ads1x15.ads1015 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 import adafruit_bmp3xx
+from circuitpython_uplot.plot import Plot, color
 
 displayio.release_displays()
 
@@ -217,8 +218,7 @@ v_text.anchor_point = (0.0, 0.0)
 v_text.anchored_position = (112, 100)
 group.append(v_text)
 
-#data
-
+#PSI Labels
 text_x = ("PSI Label")
 x_text = label.Label(my_font, text=text_x, color=green)
 x_text.anchor_point = (0.0, 0.0)
@@ -232,31 +232,34 @@ z_text.anchored_position = (20, 39)
 group.append(z_text)
 group.scale = 2
 
+#High score
 text_a = ("")
 a_text = label.Label(my_font, text=text_a, color=brightPurple)
 a_text.anchor_point = (0.0, 0.0)
 a_text.anchored_position = (50, 106)
 group.append(a_text)
 
-text_al = ("Altitude")
+text_al = ("")
 al_text = label.Label(arrowFont, text=text_al, color=purple)
 al_text.anchor_point = (0.0, 0.0)
 al_text.anchored_position = (7, 100)
 group.append(al_text)
 
-text_b = ("voltage")
+#map voltage
+text_b = ("")
 b_text = label.Label(my_font, text=text_b, color=brightYellow)
 b_text.anchor_point = (0.0, 0.0)
 b_text.anchored_position = (50, 87)
 group.append(b_text)
 
-text_bl = ("voltage")
+text_bl = ("")
 bl_text = label.Label(carParts, text=text_bl, color=yellow)
 bl_text.anchor_point = (0.0, 0.0)
 bl_text.anchored_position = (7, 83)
 group.append(bl_text)
 
-text_c = ("status")
+#UI Elements
+text_c = ("")
 c_text = label.Label(my_font, text=text_c, color=grey)
 c_text.anchor_point = (0.0, 0.0)
 c_text.anchored_position = (106, 85)
@@ -272,26 +275,45 @@ group.append(roundrect1)
 group.append(roundrect2)
 group.append(roundrect3)
 
-#boost = ((chan.voltage * 9.48901) - bmp.pressure * .0145038)
+######################
+PRESSURE_MIN = 0  # Minimum pressure value
+PRESSURE_MAX = 49.45  # Maximum pressure value
 
+def map_pressure(voltage):
+    # Assuming the voltage range is from 0 to 5V
+    voltage_range = 5.0
+    pressure_range = PRESSURE_MAX - PRESSURE_MIN
+    pressure = (voltage / voltage_range) * pressure_range + PRESSURE_MIN
+    return max(min(pressure, PRESSURE_MAX), PRESSURE_MIN)
 
+boost = ((chan.voltage * 9.48901) - bmp.pressure * .0145038)
+max_value = 0
 
 while True:
-
-    boost = ((chan.voltage * 9.48901) - bmp.pressure * .0145038)
-    if boost >= 2.7:
+    
+    #local vars
+    voltage = chan.voltage
+    pressure = map_pressure(voltage)
+    true_pressure = (pressure - 14.91)
+    max_boost = (pressure - 14.91)
+    
+    if max_boost > max_value:
+        max_value = max_boost
+        a_text.text = "{:>5.3f}".format(max_value)
+    
+    if true_pressure >= 2:
         f_text.text = (">")
         v_text.text = ("l")
     else:
         f_text.text = (" ")
         v_text.text = (" ")
         gc.collect()
-    if boost >= 5.4:
+    if true_pressure >= 5.4:
         fa_text.text = (">")
     else:
         fa_text.text = (" ")
         gc.collect()
-    if boost >= 8.1:
+    if true_pressure >= 8.1:
         fb_text.text = (">")
     else:
         fb_text.text = (" ")
@@ -302,7 +324,7 @@ while True:
     else:
         g_text.text = (" ")
         gc.collect()
-    if boost >=13.5:
+    if true_pressure >=13.5:
         ga_text.text = (">")
     else:
         ga_text.text = (" ")
@@ -313,7 +335,7 @@ while True:
         gb_text.text = (" ")
         gc.collect()
     #high
-    if boost >=18.9:
+    if true_pressure >=18.9:
         h_text.text = (">")
     else:
         h_text.text = (" ")
@@ -328,31 +350,14 @@ while True:
     else:
         hb_text.text = (" ")
         gc.collect()
-    #high score
-    if boost >=20:
-        a_text.text = "{:2.2f}".format(boost)
-    else:
-        pass
-    #def bewst(boost1, boost):
-        #maximum = 0
-        #for boost1 in bewst:
-            #if boost > maximum:
-                #a_max = boost1
-                #a_text.text = ("{:3.2f}".format(a_max))
-            #else:
-                #pass
-
-
-
-    z_text.text = ("{:>5.2f}".format((chan.voltage * 9.48901) - bmp.pressure * .0145038))
+    
+    z_text.text = ("{:.2f}".format(true_pressure))#("{:>5.2f}".format((chan.voltage * 9.48901) - bmp.pressure * .0145038))
     x_text.text = ("PSI")
-    #a_text.text = ((chan.voltage * 9.48901) - bmp.pressure * .0145038)
     b_text.text = ("{:>5.3f}".format(chan.voltage))
     c_text.text = ("STATUS")
     bl_text.text = ("k")
     al_text.text = ("B")
 
-
+    print(bmp.pressure) #* .0145038)
     gc.collect()
     time.sleep(0.05)
-
